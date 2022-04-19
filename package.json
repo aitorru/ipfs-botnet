@@ -25,6 +25,7 @@
     "typescript": "^4.6.3"
   },
   "dependencies": {
-    "args": "^5.0.1"
+    "args": "^5.0.1",
+    "ipfs-core": "^0.14.2"
   }
 }
