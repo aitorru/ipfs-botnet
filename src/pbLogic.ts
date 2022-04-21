@@ -63,11 +63,14 @@ const list_peers = async (topic:string) => {
  */
 const create_IPFS = async () => {
   const ipfs = await IPFS.create({
+    repo: 'ok' + Math.random(),
     config: {
       Addresses: {
         Swarm: [
           '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
           '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+          '/dns4/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star',
+          '/dns6/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star',
           '/ip4/0.0.0.0/tcp/4002',
           '/ip4/127.0.0.1/tcp/4003/ws'
         ],
