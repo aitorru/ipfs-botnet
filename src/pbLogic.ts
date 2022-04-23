@@ -44,6 +44,8 @@ const send_next_target = async (topic:string, payload:string) => {
   const ipfs = await create_IPFS();
   const msg = new TextEncoder().encode(naclUtil.encodeBase64(signedMessage));
   await ipfs.pubsub.publish(topic, msg);
+  console.log(payload, ' was sent to ', topic);
+  exit(0);
 };
 
 /**
@@ -63,7 +65,6 @@ const list_peers = async (topic:string) => {
  */
 const create_IPFS = async () => {
   const ipfs = await IPFS.create({
-    repo: 'ok' + Math.random(),
     config: {
       Addresses: {
         Swarm: [
@@ -74,9 +75,20 @@ const create_IPFS = async () => {
           '/ip4/0.0.0.0/tcp/4002',
           '/ip4/127.0.0.1/tcp/4003/ws'
         ],
+      },
+      Bootstrap: [
+        '/dns6/ipfs.thedisco.zone/tcp/4430/wss/p2p/12D3KooWChhhfGdB9GJy1GbhghAAKCUR99oCymMEVS4eUcEy67nt',
+        '/dns4/ipfs.thedisco.zone/tcp/4430/wss/p2p/12D3KooWChhhfGdB9GJy1GbhghAAKCUR99oCymMEVS4eUcEy67nt'
+      ],
+    },
+    relay: {
+      enabled: true,
+      hop: {
+        enabled: true
       }
     }
   });
+  console.log();
   return ipfs;
 };
 
