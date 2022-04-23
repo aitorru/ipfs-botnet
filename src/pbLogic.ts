@@ -18,7 +18,12 @@ export default async function pbL(topic: string) {
   await ipfs.pubsub.subscribe(topic, receiveMsg);
 }
 
+/**
+ * Verify the incoming message 
+ * @param payload Payload to verify
+ */
 const parse_incoming_text = (payload:string) => {
+  console.log('Recived:', payload);
   const signedMessage = naclUtil.decodeBase64(payload);
   const publicKey = fs.readFileSync('pbkey.key').toString();
   const messageVerified = nacl.sign.open(
@@ -27,6 +32,8 @@ const parse_incoming_text = (payload:string) => {
   );
   if (messageVerified !== null) {
     pingL(naclUtil.encodeBase64(messageVerified));
+  } else {
+    console.log('Failed to verify');
   }
 };
 
@@ -44,7 +51,7 @@ const send_next_target = async (topic:string, payload:string) => {
   const ipfs = await create_IPFS();
   const msg = new TextEncoder().encode(naclUtil.encodeBase64(signedMessage));
   await ipfs.pubsub.publish(topic, msg);
-  console.log(payload, ' was sent to ', topic);
+  console.log(payload, 'was sent to', topic);
   exit(0);
 };
 
@@ -86,9 +93,11 @@ const create_IPFS = async () => {
       hop: {
         enabled: true
       }
+    },
+    EXPERIMENTAL: {
+      ipnsPubsub: true,
     }
   });
-  console.log();
   return ipfs;
 };
 
