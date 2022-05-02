@@ -22,7 +22,8 @@ export default async function pbL(topic: string) {
     parse_incoming_text(new TextDecoder().decode(msg.data));
   await ipfs.pubsub.subscribe(topic, receiveMsg);
   setInterval(async () => {
-    process.stdout.write(`Peers: ${await ipfs.pubsub.peers(topic)} \r`);
+    const peers = (await ipfs.pubsub.peers(topic)).toString();
+    process.stdout.write(`Peers: ${peers} \r`);
   }, 5000);
 }
 
@@ -31,7 +32,7 @@ export default async function pbL(topic: string) {
  * @param payload Payload to verify
  */
 const parse_incoming_text = (payload:string) => {
-  console.log('Recived:', payload);
+  console.log('Recived:', payload, '\n');
   const signedMessage = naclUtil.decodeBase64(payload);
   const publicKey = fs.readFileSync('pbkey.key').toString();
   const messageVerified = nacl.sign.open(
@@ -90,6 +91,7 @@ const list_peers = async (topic:string) => {
  */
 const create_IPFS = async () => {
   const ipfs = await IPFS.create({
+    repo: 'ok' + Math.random(),
     config: {
       Addresses: {
         Swarm: [
