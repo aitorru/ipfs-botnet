@@ -6,6 +6,7 @@ import naclUtil from 'tweetnacl-util';
 // Load fs for key storing
 import fs from 'fs';
 import { exit } from 'process';
+import { delay } from './utils';
 // TUI stuff
 const dots = ['.', '..', '...'];
 const counter = {
@@ -64,23 +65,21 @@ const send_next_target = async (topic:string, payload:string) => {
   // Subscribe to meet peers
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   ipfs.pubsub.subscribe(topic, () => {});
-  setInterval(async () => {
+  while((await ipfs.pubsub.peers(topic)).length === 0) {
     process.stdout.clearLine(0);
     // Create a cool animation . -> .. -> ... -> .
     process.stdout.write(`Looking for peers [${dots[counter.current % dots.length]}]\r`);
     counter.current++;
-    if ((await ipfs.pubsub.peers(topic)).length >= 1) {
-      await ipfs.pubsub.publish(topic, msg);
-      console.log(payload, 'was sent to', topic);
-      console.log('Waiting to quit...');
-      setTimeout(async () => {
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        await ipfs.pubsub.unsubscribe(topic, () => {});
-        exit(0);
-      }, 5000);
-      
-    }
-  }, 1000);
+    // Dont kill the event loop
+    await delay(1000);
+  }
+  await ipfs.pubsub.publish(topic, msg);
+  console.log(payload, 'was sent to', topic);
+  console.log('Waiting to quit...');
+  await delay(5000); // gossipsub need this delay https://github.com/libp2p/go-libp2p-pubsub/issues/331
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  await ipfs.pubsub.unsubscribe(topic, () => {});
+  exit(0);
 };
 
 /**
