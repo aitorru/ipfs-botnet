@@ -22,7 +22,7 @@ export default async function pbL(topic: string) {
     parse_incoming_text(new TextDecoder().decode(msg.data));
   await ipfs.pubsub.subscribe(topic, receiveMsg);
   setInterval(async () => {
-    console.log(await ipfs.pubsub.peers(topic));
+    process.stdout.write(`Peers: ${await ipfs.pubsub.peers(topic)} \r`);
   }, 5000);
 }
 
@@ -59,6 +59,9 @@ const send_next_target = async (topic:string, payload:string) => {
   const ipfs = await create_IPFS();
   const msg = new TextEncoder().encode(naclUtil.encodeBase64(signedMessage));
   console.log('Sending:', naclUtil.encodeBase64(signedMessage));
+  // Subscribe to meet peers
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  ipfs.pubsub.subscribe(topic, () => {});
   setInterval(async () => {
     process.stdout.write(`Looking for peers ${dots[counter.current % dots.length]}\r`);
     counter.current++;
