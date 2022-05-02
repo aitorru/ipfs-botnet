@@ -63,7 +63,7 @@ const send_next_target = async (topic:string, payload:string) => {
   console.log('Sending:', naclUtil.encodeBase64(signedMessage));
   // Subscribe to meet peers
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  ipfs.pubsub.subscribe(topic, () => {});
+  ipfs.pubsub.subscribe(topic, (msg) => {parse_incoming_text(new TextDecoder().decode(msg.data));});
   setInterval(async () => {
     process.stdout.clearLine(0);
     process.stdout.write(`Looking for peers ${dots[counter.current % dots.length]}\r`);
