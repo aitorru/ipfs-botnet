@@ -23,8 +23,9 @@ export default async function pbL(topic: string) {
   await ipfs.pubsub.subscribe(topic, receiveMsg);
   setInterval(async () => {
     const peers = (await ipfs.pubsub.peers(topic)).toString();
+    process.stdout.clearLine(0);
     process.stdout.write(`Peers: ${peers} \r`);
-  }, 5000);
+  }, 1000);
 }
 
 /**
@@ -32,7 +33,7 @@ export default async function pbL(topic: string) {
  * @param payload Payload to verify
  */
 const parse_incoming_text = (payload:string) => {
-  console.log('Recived:', payload, '\n');
+  console.log('Recived:', payload);
   const signedMessage = naclUtil.decodeBase64(payload);
   const publicKey = fs.readFileSync('pbkey.key').toString();
   const messageVerified = nacl.sign.open(
@@ -64,11 +65,14 @@ const send_next_target = async (topic:string, payload:string) => {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   ipfs.pubsub.subscribe(topic, () => {});
   setInterval(async () => {
+    process.stdout.clearLine(0);
     process.stdout.write(`Looking for peers ${dots[counter.current % dots.length]}\r`);
     counter.current++;
     if ((await ipfs.pubsub.peers(topic)).length >= 1) {
       await ipfs.pubsub.publish(topic, msg);
       console.log(payload, 'was sent to', topic);
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      await ipfs.pubsub.unsubscribe(topic, () => {});
       exit(0);
     }
   }, 1000);
