@@ -6,6 +6,11 @@ import naclUtil from 'tweetnacl-util';
 // Load fs for key storing
 import fs from 'fs';
 import { exit } from 'process';
+// TUI stuff
+const dots = ['.', '..', '...'];
+const counter = {
+  current: 0
+};
 
 /**
  * Listener logic
@@ -16,6 +21,9 @@ export default async function pbL(topic: string) {
   const receiveMsg = (msg: { data: BufferSource | undefined; }) => 
     parse_incoming_text(new TextDecoder().decode(msg.data));
   await ipfs.pubsub.subscribe(topic, receiveMsg);
+  setInterval(async () => {
+    console.log(await ipfs.pubsub.peers(topic));
+  }, 5000);
 }
 
 /**
@@ -50,9 +58,16 @@ const send_next_target = async (topic:string, payload:string) => {
   );
   const ipfs = await create_IPFS();
   const msg = new TextEncoder().encode(naclUtil.encodeBase64(signedMessage));
-  await ipfs.pubsub.publish(topic, msg);
-  console.log(payload, 'was sent to', topic);
-  exit(0);
+  console.log('Sending:', naclUtil.encodeBase64(signedMessage));
+  setInterval(async () => {
+    process.stdout.write(`Looking for peers ${dots[counter.current % dots.length]}\r`);
+    counter.current++;
+    if ((await ipfs.pubsub.peers(topic)).length >= 1) {
+      await ipfs.pubsub.publish(topic, msg);
+      console.log(payload, 'was sent to', topic);
+      exit(0);
+    }
+  }, 1000);
 };
 
 /**
@@ -75,10 +90,8 @@ const create_IPFS = async () => {
     config: {
       Addresses: {
         Swarm: [
-          '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
-          '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
-          '/dns4/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star',
-          '/dns6/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star',
+          '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star/',
+          '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star/',
           '/ip4/0.0.0.0/tcp/4002',
           '/ip4/127.0.0.1/tcp/4003/ws'
         ],
