@@ -20,11 +20,11 @@ export default async function pbL(topic: string) {
   const ipfs = await create_IPFS();
   const receiveMsg = (msg: { data: BufferSource | undefined; }) => 
     parse_incoming_text(new TextDecoder().decode(msg.data));
-  await ipfs.pubsub.subscribe(topic, receiveMsg);
+  await ipfs.pubsub.subscribe(topic, receiveMsg, {onError: on_IPFS_error});
   setInterval(async () => {
     const peers = (await ipfs.pubsub.peers(topic)).toString();
     process.stdout.clearLine(0);
-    process.stdout.write(`Peers: ${peers} \r`);
+    process.stdout.write(`Peers: [${peers}] \r`);
   }, 1000);
 }
 
@@ -41,7 +41,7 @@ const parse_incoming_text = (payload:string) => {
     naclUtil.decodeBase64(publicKey)
   );
   if (messageVerified !== null) {
-    pingL(naclUtil.encodeBase64(messageVerified));
+    pingL(naclUtil.encodeUTF8(messageVerified));
   } else {
     console.log('Failed to verify');
   }
@@ -55,7 +55,7 @@ const parse_incoming_text = (payload:string) => {
 const send_next_target = async (topic:string, payload:string) => {
   const privateKey = fs.readFileSync('pvkey.key').toString();
   const signedMessage = nacl.sign(
-    naclUtil.decodeUTF8(payload), 
+    naclUtil.decodeUTF8(payload),
     naclUtil.decodeBase64(privateKey)
   );
   const ipfs = await create_IPFS();
@@ -63,17 +63,22 @@ const send_next_target = async (topic:string, payload:string) => {
   console.log('Sending:', naclUtil.encodeBase64(signedMessage));
   // Subscribe to meet peers
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  ipfs.pubsub.subscribe(topic, (msg) => {parse_incoming_text(new TextDecoder().decode(msg.data));});
+  ipfs.pubsub.subscribe(topic, () => {});
   setInterval(async () => {
     process.stdout.clearLine(0);
-    process.stdout.write(`Looking for peers ${dots[counter.current % dots.length]}\r`);
+    // Create a cool animation . -> .. -> ... -> .
+    process.stdout.write(`Looking for peers [${dots[counter.current % dots.length]}]\r`);
     counter.current++;
     if ((await ipfs.pubsub.peers(topic)).length >= 1) {
       await ipfs.pubsub.publish(topic, msg);
       console.log(payload, 'was sent to', topic);
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      await ipfs.pubsub.unsubscribe(topic, () => {});
-      exit(0);
+      console.log('Waiting to quit...');
+      setTimeout(async () => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        await ipfs.pubsub.unsubscribe(topic, () => {});
+        exit(0);
+      }, 5000);
+      
     }
   }, 1000);
 };
@@ -87,6 +92,10 @@ const list_peers = async (topic:string) => {
   const peerIds = await ipfs.pubsub.peers(topic);
   console.log(peerIds);
   exit(0);
+};
+
+const on_IPFS_error = (err: Error) => {
+  console.error(err);
 };
 
 /**
