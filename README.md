@@ -27,10 +27,11 @@ yarn dev
 yarn start
 ```
 
-## Author
+## Authors
 
 👤 **Aitor Ruiz <aitorruiz2m@gmail.com>**
-
+👤 **Sergio Salgado <ssc1099.csmm@gmail.com>**
+👤 **Lazlo Meli <lazlomeli@gmail.com>**
 
 ## Show your support
 
