@@ -3422,6 +3422,11 @@ picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.3.1:
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.3.1.tgz#3ba3833733646d9d3e4995946c1365a67fb07a42"
   integrity sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==
 
+ping.js@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/ping.js/-/ping.js-0.3.0.tgz#3e90615159785114fa1bc550f69136a593c49315"
+  integrity sha512-qisFwio7j0cwYbOcRL4BlTdxKALcpGPTkpl8ichGASgkrVqfI3sZfQDsP8wETR5rfutXZJLjlJ117aLkRnk2mA==
+
 prelude-ls@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
