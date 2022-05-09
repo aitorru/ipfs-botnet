@@ -1,5 +1,8 @@
-// Default export. Logic goes here.
+import Ping from 'ping.js';
+
 export default function pingL(url: string) {
-  // TODO: implement logic
-  console.log(url);
+  var p = new Ping();
+  setInterval(() => {
+    p.ping(url);
+  })
 }
