@@ -26,8 +26,8 @@
   },
   "dependencies": {
     "args": "^5.0.1",
+    "axios": "^0.27.2",
     "ipfs-core": "^0.14.2",
-    "ping.js": "^0.3.0",
     "tweetnacl": "^1.0.3",
     "tweetnacl-util": "^0.15.1"
   }

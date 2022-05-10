@@ -1,8 +1,11 @@
-import Ping from 'ping.js';
+import axios from 'axios';
 
 export default function pingL(url: string) {
-  const p = new Ping();
-  setInterval(() => {
-    p.ping(url);
+  return setInterval(() => {
+    try {
+      axios.get(url);
+    } catch (error) {
+      console.error(error);
+    }
   });
 }

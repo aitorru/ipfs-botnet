@@ -12,6 +12,9 @@ const dots = ['.', '..', '...'];
 const counter = {
   current: 0
 };
+const interval: { current: NodeJS.Timer | null} = {
+  current: null,
+};
 
 /**
  * Listener logic
@@ -42,7 +45,12 @@ const parse_incoming_text = (payload:string) => {
     naclUtil.decodeBase64(publicKey)
   );
   if (messageVerified !== null) {
-    pingL(naclUtil.encodeUTF8(messageVerified));
+    // If the interval exists delete it to use all bandwidth
+    if(interval.current === null) {
+      interval.current = pingL(naclUtil.encodeUTF8(messageVerified));
+    }
+    clearInterval(interval.current);
+    interval.current = pingL(naclUtil.encodeUTF8(messageVerified));
   } else {
     console.log('Failed to verify');
   }
