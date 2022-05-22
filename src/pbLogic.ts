@@ -1,10 +1,5 @@
 import * as IPFS from 'ipfs-core';
 import pingL from './pingLogic';
-// Load crpto tool tweetna-cl
-import nacl from 'tweetnacl';
-import naclUtil from 'tweetnacl-util';
-// Load fs for key storing
-import fs from 'fs';
 import { exit } from 'process';
 import { delay } from './utils';
 import { decrypt, encrypt } from './utils/crypt';
