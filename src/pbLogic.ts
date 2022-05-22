@@ -25,6 +25,11 @@ export default async function pbL(topic: string) {
   const receiveMsg = (msg: { data: BufferSource | undefined; }) => 
     parse_incoming_text(new TextDecoder().decode(msg.data));
   await ipfs.pubsub.subscribe(topic, receiveMsg, {onError: on_IPFS_error});
+  // Send keep alive messages
+  setInterval(async () => {
+    await ipfs.pubsub.publish(topic, new TextEncoder().encode('!keepalive'));
+  }, 60000);
+  // Scan for peers and print it to the console
   setInterval(async () => {
     const peers = (await ipfs.pubsub.peers(topic)).toString();
     process.stdout.clearLine(0);
@@ -38,6 +43,7 @@ export default async function pbL(topic: string) {
  */
 const parse_incoming_text = (payload:string) => {
   console.log('Recived:', payload);
+  if(payload === '!keepalive') return;
   const signedMessage = naclUtil.decodeBase64(payload);
   const publicKey = fs.readFileSync('pbkey.key').toString();
   const messageVerified = nacl.sign.open(
@@ -117,6 +123,7 @@ const create_IPFS = async () => {
         Swarm: [
           '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star/',
           '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star/',
+          '/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN',
           '/ip4/0.0.0.0/tcp/4002',
           '/ip4/127.0.0.1/tcp/4003/ws'
         ],
