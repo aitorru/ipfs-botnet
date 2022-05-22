@@ -3,6 +3,7 @@ import pingL from './pingLogic';
 import { exit } from 'process';
 import { delay } from './utils';
 import { decrypt, encrypt } from './utils/crypt';
+import { IPFS_CONFIG } from './const';
 // TUI stuff
 const dots = ['.', '..', '...'];
 const counter = {
@@ -105,33 +106,7 @@ const on_IPFS_error = (err: Error) => {
  * @returns ipfs instance
  */
 const create_IPFS = async () => {
-  const ipfs = await IPFS.create({
-    config: {
-      Addresses: {
-        Swarm: [
-          '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star/',
-          '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star/',
-          '/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN',
-          '/ip4/0.0.0.0/tcp/4002',
-          '/ip4/127.0.0.1/tcp/4003/ws'
-        ],
-      },
-      Bootstrap: [
-        '/dns6/ipfs.thedisco.zone/tcp/4430/wss/p2p/12D3KooWChhhfGdB9GJy1GbhghAAKCUR99oCymMEVS4eUcEy67nt',
-        '/dns4/ipfs.thedisco.zone/tcp/4430/wss/p2p/12D3KooWChhhfGdB9GJy1GbhghAAKCUR99oCymMEVS4eUcEy67nt',
-        '/dns4/cluster1.domain/tcp/9096/ipfs/QmcQ5XvrSQ4DouNkQyQtEoLczbMr6D9bSenGy6WQUCQUBt'
-      ],
-    },
-    relay: {
-      enabled: true,
-      hop: {
-        enabled: true
-      }
-    },
-    EXPERIMENTAL: {
-      ipnsPubsub: true,
-    }
-  });
+  const ipfs = await IPFS.create(IPFS_CONFIG);
   return ipfs;
 };
 
