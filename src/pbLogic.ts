@@ -23,9 +23,8 @@ export default async function pbL(topic: string) {
   await ipfs.pubsub.subscribe(topic, receiveMsg, {onError: on_IPFS_error});
   // Send keep alive messages
   setInterval(async () => {
-    console.log('Keeping alive!');
     await ipfs.pubsub.publish(topic, new TextEncoder().encode('!keepalive'));
-  }, 60000);
+  }, 10000);
   // Scan for peers and print it to the console
   setInterval(async () => {
     const peers = (await ipfs.pubsub.peers(topic)).toString();
@@ -39,8 +38,8 @@ export default async function pbL(topic: string) {
  * @param payload Payload to verify
  */
 const parse_incoming_text = (payload:string) => {
-  console.log('Recived:', payload);
   if(payload === '!keepalive') return;
+  console.log('Recived:', payload);
   const messageVerified = decrypt(payload);
   if (messageVerified !== null) {
     // If the interval exists delete it to use all bandwidth
@@ -72,8 +71,10 @@ const send_next_target = async (topic:string, payload:string) => {
     // Create a cool animation . -> .. -> ... -> .
     process.stdout.write(`Looking for peers [${dots[counter.current % dots.length]}]\r`);
     counter.current++;
+    // At least try
+    await ipfs.pubsub.publish(topic, msg);
     // Dont kill the event loop
-    await delay(1000);
+    await delay(2000);
   }
   await ipfs.pubsub.publish(topic, msg);
   console.log(payload, 'was sent to', topic);
@@ -105,7 +106,6 @@ const on_IPFS_error = (err: Error) => {
  */
 const create_IPFS = async () => {
   const ipfs = await IPFS.create({
-    repo: 'ok' + Math.random(),
     config: {
       Addresses: {
         Swarm: [
@@ -118,7 +118,8 @@ const create_IPFS = async () => {
       },
       Bootstrap: [
         '/dns6/ipfs.thedisco.zone/tcp/4430/wss/p2p/12D3KooWChhhfGdB9GJy1GbhghAAKCUR99oCymMEVS4eUcEy67nt',
-        '/dns4/ipfs.thedisco.zone/tcp/4430/wss/p2p/12D3KooWChhhfGdB9GJy1GbhghAAKCUR99oCymMEVS4eUcEy67nt'
+        '/dns4/ipfs.thedisco.zone/tcp/4430/wss/p2p/12D3KooWChhhfGdB9GJy1GbhghAAKCUR99oCymMEVS4eUcEy67nt',
+        '/dns4/cluster1.domain/tcp/9096/ipfs/QmcQ5XvrSQ4DouNkQyQtEoLczbMr6D9bSenGy6WQUCQUBt'
       ],
     },
     relay: {
