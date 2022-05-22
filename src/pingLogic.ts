@@ -7,5 +7,5 @@ export default function pingL(url: string) {
     } catch (error) {
       console.error(error);
     }
-  });
+  }, 100);
 }

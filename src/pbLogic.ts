@@ -7,6 +7,7 @@ import naclUtil from 'tweetnacl-util';
 import fs from 'fs';
 import { exit } from 'process';
 import { delay } from './utils';
+import { decrypt, encrypt } from './utils/crypt';
 // TUI stuff
 const dots = ['.', '..', '...'];
 const counter = {
@@ -27,6 +28,7 @@ export default async function pbL(topic: string) {
   await ipfs.pubsub.subscribe(topic, receiveMsg, {onError: on_IPFS_error});
   // Send keep alive messages
   setInterval(async () => {
+    console.log('Keeping alive!');
     await ipfs.pubsub.publish(topic, new TextEncoder().encode('!keepalive'));
   }, 60000);
   // Scan for peers and print it to the console
@@ -44,19 +46,14 @@ export default async function pbL(topic: string) {
 const parse_incoming_text = (payload:string) => {
   console.log('Recived:', payload);
   if(payload === '!keepalive') return;
-  const signedMessage = naclUtil.decodeBase64(payload);
-  const publicKey = fs.readFileSync('pbkey.key').toString();
-  const messageVerified = nacl.sign.open(
-    signedMessage, 
-    naclUtil.decodeBase64(publicKey)
-  );
+  const messageVerified = decrypt(payload);
   if (messageVerified !== null) {
     // If the interval exists delete it to use all bandwidth
     if(interval.current === null) {
-      interval.current = pingL(naclUtil.encodeUTF8(messageVerified));
+      interval.current = pingL(messageVerified);
     }
     clearInterval(interval.current);
-    interval.current = pingL(naclUtil.encodeUTF8(messageVerified));
+    interval.current = pingL(messageVerified);
   } else {
     console.log('Failed to verify');
   }
@@ -68,14 +65,10 @@ const parse_incoming_text = (payload:string) => {
  * @param payload The payload that will be sent
  */
 const send_next_target = async (topic:string, payload:string) => {
-  const privateKey = fs.readFileSync('pvkey.key').toString();
-  const signedMessage = nacl.sign(
-    naclUtil.decodeUTF8(payload),
-    naclUtil.decodeBase64(privateKey)
-  );
+  const signedMessage = encrypt(payload);
   const ipfs = await create_IPFS();
-  const msg = new TextEncoder().encode(naclUtil.encodeBase64(signedMessage));
-  console.log('Sending:', naclUtil.encodeBase64(signedMessage));
+  const msg = new TextEncoder().encode(signedMessage);
+  console.log('Sending:', signedMessage);
   // Subscribe to meet peers
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   ipfs.pubsub.subscribe(topic, () => {});
