@@ -1,4 +1,5 @@
 const IPFS_CONFIG = {
+  repo: '.ipfs',
   config: {
     Addresses: {
       Swarm: [

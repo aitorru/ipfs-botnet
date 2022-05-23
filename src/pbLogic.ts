@@ -72,8 +72,6 @@ const send_next_target = async (topic:string, payload:string) => {
     // Create a cool animation . -> .. -> ... -> .
     process.stdout.write(`Looking for peers [${dots[counter.current % dots.length]}]\r`);
     counter.current++;
-    // At least try
-    await ipfs.pubsub.publish(topic, msg);
     // Dont kill the event loop
     await delay(2000);
   }
