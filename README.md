@@ -35,6 +35,8 @@ yarn start
 
 👤 **Lazlo Meli <lazlomeli@gmail.com>**
 
+👤 **Aitor Fournier <aitorfournier@opendeusto.es>**
+
 ## Show your support
 
 Give a ⭐️ if this project helped you!
