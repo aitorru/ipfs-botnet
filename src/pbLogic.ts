@@ -21,11 +21,7 @@ export default async function pbL(topic: string) {
   const ipfs = await create_IPFS();
   const receiveMsg = (msg: { data: BufferSource | undefined; }) => 
     parse_incoming_text(new TextDecoder().decode(msg.data));
-  await ipfs.pubsub.subscribe(topic, receiveMsg, {onError: on_IPFS_error});
-  // Send keep alive messages
-  setInterval(async () => {
-    await ipfs.pubsub.publish(topic, new TextEncoder().encode('!keepalive'));
-  }, 10000);
+  await ipfs.pubsub.subscribe(topic, receiveMsg);
   // Scan for peers and print it to the console
   setInterval(async () => {
     const peers = (await ipfs.pubsub.peers(topic)).toString();
@@ -39,7 +35,6 @@ export default async function pbL(topic: string) {
  * @param payload Payload to verify
  */
 const parse_incoming_text = (payload:string) => {
-  if(payload === '!keepalive') return;
   console.log('Recived:', payload);
   const messageVerified = decrypt(payload);
   if (messageVerified !== null) {
@@ -93,10 +88,6 @@ const list_peers = async (topic:string) => {
   const peerIds = await ipfs.pubsub.peers(topic);
   console.log(peerIds);
   exit(0);
-};
-
-const on_IPFS_error = (err: Error) => {
-  console.error(err);
 };
 
 /**

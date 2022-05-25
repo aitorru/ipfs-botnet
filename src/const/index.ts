@@ -11,6 +11,10 @@ const IPFS_CONFIG = {
       '/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
       '/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6',
     ],
+    Pubsub: {
+      Router: 'floodsub',
+      Enabled: true
+    }
   },
   relay: {
     enabled: true,
