@@ -1,6 +1,7 @@
 {
   "name": "ipfs-botnet",
   "version": "1.0.0",
+  "bin": "dist/index.js",
   "description": "A botnet implementation over ipfs pubsub.",
   "main": "dist/index.js",
   "scripts": {
@@ -10,7 +11,8 @@
     "watch:build": "tsc -w",
     "watch:dev": "nodemon dist/index.js",
     "lint": "eslint --fix .",
-    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'src/test/**/*.ts'"
+    "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'src/test/**/*.ts'",
+    "package": "pkg --compressed GZip -t node14-win --out-path bin ."
   },
   "repository": "https://github.com/aitorru/ipfs-botnet.git",
   "author": "Aitor Ruiz <aitorruiz2m@gmail.com>",
@@ -20,15 +22,16 @@
     "@types/chai": "^4.3.1",
     "@types/mocha": "^9.1.1",
     "@types/node": "^17.0.35",
-    "@typescript-eslint/eslint-plugin": "^5.25.0",
-    "@typescript-eslint/parser": "^5.25.0",
+    "@typescript-eslint/eslint-plugin": "^5.26.0",
+    "@typescript-eslint/parser": "^5.26.0",
     "chai": "^4.3.6",
-    "concurrently": "^7.2.0",
+    "concurrently": "^7.2.1",
     "eslint": "^8.16.0",
     "mocha": "^10.0.0",
     "nodemon": "^2.0.16",
+    "pkg": "^5.7.0",
     "ts-node": "^10.8.0",
-    "typescript": "^4.6.4"
+    "typescript": "^4.7.2"
   },
   "dependencies": {
     "args": "^5.0.3",

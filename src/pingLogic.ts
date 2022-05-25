@@ -1,11 +1,11 @@
 import axios from 'axios';
 
 export default function pingL(url: string) {
-  return setInterval(() => {
+  return setInterval(async () => {
     try {
-      axios.get(url);
+      await axios.get(url);
     } catch (error) {
       console.error(error);
     }
-  }, 100);
+  }, 500);
 }

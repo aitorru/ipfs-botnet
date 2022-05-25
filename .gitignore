@@ -109,3 +109,6 @@ dist
 
 # IPFS repo
 .ipfs
+
+# Binaries
+bin

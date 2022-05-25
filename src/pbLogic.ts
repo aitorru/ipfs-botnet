@@ -41,9 +41,10 @@ const parse_incoming_text = (payload:string) => {
     // If the interval exists delete it to use all bandwidth
     if(interval.current === null) {
       interval.current = pingL(messageVerified);
+    } else {
+      clearInterval(interval.current);
+      interval.current = pingL(messageVerified);
     }
-    clearInterval(interval.current);
-    interval.current = pingL(messageVerified);
   } else {
     console.log('Failed to verify');
   }
